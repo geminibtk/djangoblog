@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+{% load crispy_forms_tags %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <h3>girisyap</h3>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            {{form|crispy}}
+            <br>
+            <button type="submit" class="btn btn-danger">girisyap</button>
+        </form>
+    </div>
+</div>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-danger mt-3">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+{% endblock body %}

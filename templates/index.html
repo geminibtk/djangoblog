@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="jumbotron text-center">
+    <h3>Yazılım Bilimi Bloguna Hoş Geldiniz</h3>
+    <p>Yazılım Bilimi Blogu, yazılım geliştirme, teknoloji ve programlama alanlarında bilgi paylaşımı yapmak isteyen geliştiriciler için oluşturulmuş bir topluluktur.
+Burada hem kendi deneyimlerinizi paylaşabilir hem de diğer yazılımcıların tecrübelerinden faydalanabilirsiniz.
+Amacımız; öğrenmeyi, öğretmeyi ve birlikte gelişmeyi teşvik eden bir ortam yaratmaktır.
+Kod yazmayı, yeni teknolojileri keşfetmeyi ve yazılım dünyasına katkı sağlamayı seven herkes burada bir araya geliyor.
+Birlikte üretelim, birlikte öğrenelim!</p>
+</div>
+<p>
+    {% if request.user.is_authenticated %}
+        girisyapilmis, {{request.user.username}}
+    {% else %}
+        girisyapilmamis
+    {% endif %}
+</p>
+<ul>
+{% for number in numbers %}
+    <li>{{number}}</li>
+{% endfor %}
+</ul>
+{% endblock body %}
