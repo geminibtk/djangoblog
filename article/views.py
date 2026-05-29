@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect, get_object_or_404,reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.decorators.http import require_POST
 
-from .forms import ArticleForm
-from .models import Article, Comment
+from .forms import ArticleForm, CommentForm
+from .models import Article
 
 
 def articles(request):
@@ -11,7 +13,7 @@ def articles(request):
     articles = Article.objects.all()
 
     if keyword:
-        articles = articles.filter(title__icontains=keyword)
+        articles = articles.filter(title__icontains=keyword.strip())
 
     articles = articles.order_by("-created_date")
     return render(request, "articles.html", {"articles": articles, "keyword": keyword})
@@ -32,7 +34,7 @@ def dashboard(request):
 
 
 @login_required(login_url="user:login")
-def addArticle(request):
+def add_article(request):
     form = ArticleForm(request.POST or None, request.FILES or None)
 
     if form.is_valid():
@@ -48,11 +50,16 @@ def addArticle(request):
 def detail(request, id):
     article = get_object_or_404(Article, id=id)
     comments = article.comments.all()
-    return render(request, "detail.html", {"article": article, "comments": comments})
+    comment_form = CommentForm()
+    return render(
+        request,
+        "detail.html",
+        {"article": article, "comments": comments, "comment_form": comment_form},
+    )
 
 
 @login_required(login_url="user:login")
-def updateArticle(request, id):
+def update_article(request, id):
     article = get_object_or_404(Article, id=id, author=request.user)
 
     form = ArticleForm(request.POST or None, request.FILES or None, instance=article)
@@ -66,27 +73,32 @@ def updateArticle(request, id):
 
 
 @login_required(login_url="user:login")
-def deleteArticle(request, id):
+@require_POST
+def delete_article(request, id):
     article = get_object_or_404(Article, id=id, author=request.user)
     article.delete()
     messages.success(request, "Makale başarıyla silindi.")
     return redirect("article:dashboard")
 
 
-def addComment(request, id):
+@require_POST
+def add_comment(request, id):
     article = get_object_or_404(Article, id=id)
+    form = CommentForm(request.POST)
 
-    if request.method == "POST":
-        comment_author = request.POST.get("comment_author")
-        comment_content = request.POST.get("comment_content")
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.article = article
+        comment.save()
+        messages.success(request, "Yorum başarıyla eklendi.")
+    else:
+        messages.error(request, "Yorum eklenemedi. Lütfen alanları kontrol edin.")
 
-        if comment_author and comment_content:
-            newComment = Comment(
-                article=article,
-                comment_author=comment_author,
-                comment_content=comment_content
-            )
-            newComment.save()
-            messages.success(request, "Yorum başarıyla eklendi.")
+    return redirect(reverse("article:detail", kwargs={"id": id}))
 
-    return redirect(reverse("article:detail",kwargs={"id":id}))
+
+# Backward-compatible aliases for older imports/tests.
+addArticle = add_article
+updateArticle = update_article
+deleteArticle = delete_article
+addComment = add_comment

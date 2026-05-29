@@ -32,22 +32,26 @@
           {% csrf_token %}
 
           <div class="form-group">
-            <label>İsim</label>
+            <label for="{{ comment_form.comment_author.id_for_label }}">İsim</label>
             <input
               type="text"
-              name="comment_author"
+              name="{{ comment_form.comment_author.name }}"
+              id="{{ comment_form.comment_author.id_for_label }}"
               class="form-control"
+              maxlength="50"
               placeholder="İsminizi girin"
               required
             >
           </div>
 
           <div class="form-group">
-            <label>Yorum</label>
+            <label for="{{ comment_form.comment_content.id_for_label }}">Yorum</label>
             <textarea
-              name="comment_content"
+              name="{{ comment_form.comment_content.name }}"
+              id="{{ comment_form.comment_content.id_for_label }}"
               class="form-control"
               rows="3"
+              maxlength="200"
               placeholder="Yorumunuzu yazın"
               required
             ></textarea>

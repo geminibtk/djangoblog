@@ -1,11 +1,35 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-..."
-DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+def get_bool_env(name, default=False):
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def get_list_env(name, default):
+    value = os.environ.get(name)
+    if not value:
+        return default
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-dev-only-change-me")
+DEBUG = get_bool_env("DJANGO_DEBUG", default=True)
+
+ALLOWED_HOSTS = get_list_env(
+    "DJANGO_ALLOWED_HOSTS",
+    ["127.0.0.1", "localhost", ".pythonanywhere.com"],
+)
+
+CSRF_TRUSTED_ORIGINS = get_list_env(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    ["https://*.pythonanywhere.com"],
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -84,7 +108,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 CKEDITOR_CONFIGS = {
     "default": {
         "removePlugins": "stylesheetparser",
-        "allowedContent": True,
+        "allowedContent": False,
         "width": "100%",
     }
 }

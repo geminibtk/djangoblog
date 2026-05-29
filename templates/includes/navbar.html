@@ -28,7 +28,10 @@
           <a class="nav-link" href="{% url 'article:dashboard' %}">Kontrol Paneli</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'user:logout' %}">Çıkış Yap</a>
+          <form method="post" action="{% url 'user:logout' %}" class="form-inline my-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link nav-link">Çıkış Yap</button>
+          </form>
         </li>
       {% else %}
         <li class="nav-item">
