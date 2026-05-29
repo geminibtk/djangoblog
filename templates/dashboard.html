@@ -6,7 +6,7 @@
     hosgeldiniz,<small>{{request.user.username}}</small>
 </p>
 <hr>
-<a class = "btn btn-danger" href = "/articles/addarticle">makaleekle</a>
+<a class="btn btn-danger" href="{% url 'article:addarticle' %}">makaleekle</a>
 <hr>
 {% if articles %}
 <table class="table">
@@ -24,11 +24,16 @@
         {% for article in articles %}
         <tr>
             <th scope="row">{{article.id}}</th>
-            <td><a href="/articles/article/{{article.id}}">{{article.title}}</a></td>
+            <td><a href="{% url 'article:detail' article.id %}">{{article.title}}</a></td>
             <td>{{article.author.username}}</td>
             <td>{{article.created_date}}</td>
-            <td><a href="/articles/update/{{article.id}}" class = "btn btn-danger">guncelle</a></td>
-            <td><a href="/articles/delete/{{article.id}}" class = "btn btn-danger">sil</a></td>
+            <td><a href="{% url 'article:update' article.id %}" class="btn btn-danger">guncelle</a></td>
+            <td>
+                <form method="post" action="{% url 'article:delete' article.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">sil</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
         <!--- <tr>
