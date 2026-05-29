@@ -13,7 +13,7 @@ class Article(models.Model):
     content = RichTextField()
     created_date = models.DateTimeField(auto_now_add=True)
 
-    article_image = models.FileField(
+    article_image = models.ImageField(
         upload_to="articles/",
         blank=True,
         null=True,
